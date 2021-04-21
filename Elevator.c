@@ -29,184 +29,180 @@ void level_up(){
 //MAIN TASK HANDLER
 task main()
 {
+	    //SNIPPET BELOW DETERMINES THE LIGHT VALUE, WILL TURN ON THE LIGHTS IT NEEDS TO AND TURN OFF THE OTHERS// LEVEL INDICATION
+	turnLEDOff(light1);
+	turnLEDOff(light2);
+	turnLEDOff(light3);
+    //RESETS THE ELEVATOR BACK TO LEVEL 1 IF IT WAS STOPPED IN THE MIDDLE OF ANOTHER PROCESS. // FAULT HANDLER
+	if(SensorValue[Encoder1] > 100){
+		clearTimer(T1);
+		while(SensorValue[Encoder1] > 100){
+			level_down();
+
+			turnLEDOff(light3);
+			turnLEDOff(light2);
+			turnLEDOn(light1);
+		stopMotor(main_shaft);
+		stopMotor(support_shaft);
+		clearTimer(T1);
+	}
+}
+//WHEN FAULT FIXED, ELEVATOR BASE LEVEL IS SET AT THE CURRENT ENCODER READING.
+	else{
+		SensorValue[Encoder1] = 0;
+	}
   //MAKES SURE THE EMERGENCY STOP IS NOT PRESSED//WHILE LOOP ENSURES THE PROGRAM CONTINUOUSLY RUNS
 	while(SensorValue[EStop] == 1){
 		//	SensorValue[Encoder1] = 0; // *IGNORE*
-    //SNIPPET BELOW DETERMINES THE LIGHT VALUE, WILL TURN ON THE LIGHTS IT NEEDS TO AND TURN OFF THE OTHERS// LEVEL INDICATION
-			turnLEDOff(light1);
-			turnLEDOff(light2);
-			turnLEDOff(light3);
-    //RESETS THE ELEVATOR BACK TO LEVEL 1 IF IT WAS STOPPED IN THE MIDDLE OF ANOTHER PROCESS. // FAULT HANDLER
-			if(SensorValue[Encoder1] > 100){
-				clearTimer(T1);
-				while(SensorValue[Encoder1] > 100){
-					level_down();
-
-					turnLEDOff(light3);
-					turnLEDOff(light2);
-					turnLEDOn(light1);
-				stopMotor(main_shaft);
-				stopMotor(support_shaft);
-				clearTimer(T1);
-			}
-		}
-    //WHEN FAULT FIXED, ELEVATOR BASE LEVEL IS SET AT THE CURRENT ENCODER READING.
-			else{
-				SensorValue[Encoder1] = 0;
-			}
     //INITIATES TIMER
 			clearTimer(T1);
     //ENSURES A TIME CHECK DURING THE PROCESS OF THE ELEVATOR RUNNING, NO COLLUSIONS OR COLLIDING PROCESSES
-			while(true){
-				while(time1[T1] <= 10000) {
-					if(SensorValue[EStop] == 0){
-						stopAllTasks();
-					}
-          //RAISE LEVEL CHECKING HANDLER - CHECKS IF DESIRED LEVEL IS HIGHER THAN CURRENT LEVEL AND IF SO, THEN THE ELEVATOR RAISES ITSELF TO DESIRED LEVEL
-					if(SensorValue[Level1] == 0){
-						if(SensorValue[Encoder1] < level_one){
-							clearTimer(T1);
-							turnLEDOff(light2);
-							turnLEDOff(light3);
-							turnLEDOn(light1);
-							while(SensorValue[Encoder1] < level_one){
 
-								if(SensorValue[EStop] == 1){
-									level_up();
-							}
-								else{
-									stopMotor(main_shaft);
-									stopMotor(support_shaft);
-									clearTimer(T1);
-									stopAllTasks();
-							}
-							}
-						}
-          }
-					if(SensorValue[Level2] == 0){
-						if(SensorValue[Encoder1] < level_two){
-							turnLEDOff(light3);
-							turnLEDOff(light1);
-							turnLEDOn(light2);
-							clearTimer(T1);
-							while(SensorValue[Encoder1] < level_two){
-								if(SensorValue[EStop] == 1){
-									level_up();
-							}
-								else{
-									stopMotor(main_shaft);
-									stopMotor(support_shaft);
-									clearTimer(T1);
-									stopAllTasks();
-									
-									
-							}
-							}
-						}
+			while(time1[T1] <= 10000) {
+				if(SensorValue[EStop] == 0){
+					stopAllTasks();
 				}
-					if(SensorValue[Level3] == 0){
-
-						if(SensorValue[Encoder1] < level_three){
-							turnLEDOff(light2);
-							turnLEDOff(light1);
-							turnLEDOn(light3);
-							clearTimer(T1);
-							while(SensorValue[Encoder1] < level_three){
-								if(SensorValue[EStop] == 1){
-									level_up();
-							}
-								else{
-									stopMotor(main_shaft);
-									stopMotor(support_shaft);
-									clearTimer(T1);
-									stopAllTasks();
-							}
-							}
-						}
-					}
-			//LOWER LEVEL CHECKING HANDLER - CHECKS IF THE DESIRED LEVEL IS BELOW CURRENT LEVEL AND IF IT IS IT LOWERS THE ELEVATOR TO DESIRED LEVEL
-					if(SensorValue[Level1] == 0){
-
-						if(SensorValue[Encoder1] > level_one){
-							turnLEDOff(light3);
-							turnLEDOff(light2);
-							turnLEDOn(light1);
-							clearTimer(T1);
-							while(SensorValue[Encoder1] > level_one){
-								if(SensorValue[EStop] == 1){
-									level_down();
-							}
-								else{
-									stopMotor(main_shaft);
-									stopMotor(support_shaft);
-									clearTimer(T1);
-									stopAllTasks();
-							}
-							}
-						}
-					}
-					if(SensorValue[Level2] == 0){
-
-						if(SensorValue[Encoder1] > level_two){
-							turnLEDOff(light1);
-							turnLEDOff(light3);
-							turnLEDOn(light2);
-							clearTimer(T1);
-							while(SensorValue[Encoder1] > level_two){
-
-								level_down();
-
-							stopMotor(main_shaft);
-							stopMotor(support_shaft);
-							clearTimer(T1);
-							stopAllTasks();
-							}
-						}
-					}
-					if(SensorValue[Level3] == 0){
+          //RAISE LEVEL CHECKING HANDLER - CHECKS IF DESIRED LEVEL IS HIGHER THAN CURRENT LEVEL AND IF SO, THEN THE ELEVATOR RAISES ITSELF TO DESIRED LEVEL
+				if(SensorValue[Level1] == 0){
+					if(SensorValue[Encoder1] < level_one){
 						clearTimer(T1);
-						if(SensorValue[Encoder1] > level_three){
-							turnLEDOff(light1);
-							turnLEDOff(light2);
-							turnLEDOn(light3);
-							while(SensorValue[Encoder1] > level_three){
-								if(SensorValue[EStop] == 1){
-									level_down();
-							}
-								else{
+						turnLEDOff(light2);
+						turnLEDOff(light3);
+						turnLEDOn(light1);
+						while(SensorValue[Encoder1] < level_one){
+
+							if(SensorValue[EStop] == 1){
+								level_up();
+						}
+							else{
 								stopMotor(main_shaft);
 								stopMotor(support_shaft);
 								clearTimer(T1);
 								stopAllTasks();
-							}
-							}
+						}
+						}
+					}
+  }
+				if(SensorValue[Level2] == 0){
+					if(SensorValue[Encoder1] < level_two){
+						turnLEDOff(light3);
+						turnLEDOff(light1);
+						turnLEDOn(light2);
+						clearTimer(T1);
+						while(SensorValue[Encoder1] < level_two){
+							if(SensorValue[EStop] == 1){
+								level_up();
+						}
+							else{
+								stopMotor(main_shaft);
+								stopMotor(support_shaft);
+								clearTimer(T1);
+								stopAllTasks();
+
+
+						}
+						}
+					}
+			}
+				if(SensorValue[Level3] == 0){
+
+					if(SensorValue[Encoder1] < level_three){
+						turnLEDOff(light2);
+						turnLEDOff(light1);
+						turnLEDOn(light3);
+						clearTimer(T1);
+						while(SensorValue[Encoder1] < level_three){
+							if(SensorValue[EStop] == 1){
+								level_up();
+						}
+							else{
+								stopMotor(main_shaft);
+								stopMotor(support_shaft);
+								clearTimer(T1);
+								stopAllTasks();
+						}
 						}
 					}
 				}
-        //ELSE: IF THE TIMER IS OVER 10 SECONDS, THE LEVEL RESETS BACK TO LEVEL 1 (LEVEL 0/GROUND LEVEL)
-				if(SensorValue[Encoder1] > level_one){
-					turnLEDOff(light3);
-					turnLEDOff(light2);
-					turnLEDOn(light1);
-					while(SensorValue[Encoder1] > level_one){
-						if(SensorValue[EStop] == 1){
+		//LOWER LEVEL CHECKING HANDLER - CHECKS IF THE DESIRED LEVEL IS BELOW CURRENT LEVEL AND IF IT IS IT LOWERS THE ELEVATOR TO DESIRED LEVEL
+				if(SensorValue[Level1] == 0){
+
+					if(SensorValue[Encoder1] > level_one){
+						turnLEDOff(light3);
+						turnLEDOff(light2);
+						turnLEDOn(light1);
+						clearTimer(T1);
+						while(SensorValue[Encoder1] > level_one){
+							if(SensorValue[EStop] == 1){
+								level_down();
+						}
+							else{
+								stopMotor(main_shaft);
+								stopMotor(support_shaft);
+								clearTimer(T1);
+								stopAllTasks();
+						}
+						}
+					}
+				}
+				if(SensorValue[Level2] == 0){
+
+					if(SensorValue[Encoder1] > level_two){
+						turnLEDOff(light1);
+						turnLEDOff(light3);
+						turnLEDOn(light2);
+						clearTimer(T1);
+						while(SensorValue[Encoder1] > level_two){
+
 							level_down();
-							}
-						else{
+
+						stopMotor(main_shaft);
+						stopMotor(support_shaft);
+						clearTimer(T1);
+						stopAllTasks();
+						}
+					}
+				}
+				if(SensorValue[Level3] == 0){
+					clearTimer(T1);
+					if(SensorValue[Encoder1] > level_three){
+						turnLEDOff(light1);
+						turnLEDOff(light2);
+						turnLEDOn(light3);
+						while(SensorValue[Encoder1] > level_three){
+							if(SensorValue[EStop] == 1){
+								level_down();
+						}
+							else{
 							stopMotor(main_shaft);
 							stopMotor(support_shaft);
 							clearTimer(T1);
 							stopAllTasks();
-							}
+						}
+						}
 					}
+				}
 			}
-				startTask(main); // IF AN ERROR IS THROWN,  THE TASK RESTARTS (KEEPS ENCODER LEVEL)
+//ELSE: IF THE TIMER IS OVER 10 SECONDS, THE LEVEL RESETS BACK TO LEVEL 1 (LEVEL 0/GROUND LEVEL)
+			if(SensorValue[Encoder1] > level_one){
+				turnLEDOff(light3);
+				turnLEDOff(light2);
+				turnLEDOn(light1);
+				while(SensorValue[Encoder1] > level_one){
+					if(SensorValue[EStop] == 1){
+						level_down();
+						}
+					else{
+						stopMotor(main_shaft);
+						stopMotor(support_shaft);
+						clearTimer(T1);
+						stopAllTasks();
+						}
+				}
 		}
-    //WHILE STATEMENT BREAKS - IF THE WHILE STATEMENT IS NOT TRUE, THEN THIS IS WHAT HAPPENS; THE PROGRAM STOPS EVERYTHING INCLUDING THE MOTORS.
-		stopAllTasks();
-		stopMotor(main_shaft);
-		stopMotor(support_shaft);
+			startTask(main); // IF AN ERROR IS THROWN,  THE TASK RESTARTS (KEEPS ENCODER LEVEL)
 	}
+//WHILE STATEMENT BREAKS - IF THE WHILE STATEMENT IS NOT TRUE, THEN THIS IS WHAT HAPPENS; THE PROGRAM STOPS EVERYTHING INCLUDING THE MOTORS.
 	stopAllTasks();
 	stopMotor(main_shaft);
 	stopMotor(support_shaft);
